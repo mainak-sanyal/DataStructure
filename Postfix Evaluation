@@ -1,0 +1,110 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#include <math.h>
+#define STACKSIZE 20
+
+struct stack
+{
+  int info[STACKSIZE];
+  int top;
+};
+
+void push(struct stack *, int);
+int pop(struct stack *);
+int stack_full(struct stack *);
+int stack_empty(struct stack *);
+int operation(int, int, char);
+int eval(char [ ]);
+
+int main()
+{
+  char expr[80];
+  int value;
+  printf("\n Enter Postfix Expression :");
+  gets(expr);
+  value = eval(expr);
+  printf("\nResult is %d", value);
+  return(0);
+}
+
+int eval(char expr[ ])
+{
+  int a, b, len, pos = 0, value;
+  char x;
+  struct stack s;
+  struct stack * sp;
+  
+  sp=&s;
+  sp->top = -1;
+  len = strlen(expr);
+  expr[len] = ')';
+
+
+  while( (x = expr[pos++]) != ')')
+  {
+    if(isdigit(x))
+    {
+      push(sp, x - '0');
+    }
+    else
+    {
+      a = pop(sp);
+      b = pop(sp);
+      value = operation(b, a, x);
+      push(sp, value);
+    }
+  }
+  return(pop(sp));
+}
+
+int operation(int b, int a, char x)
+{
+  switch(x)
+  {
+    case '+': return(b + a);
+    case '-': return(b - a);
+    case '*': return(b * a);
+    case '/': return(b / a);
+    case '^': return(pow(b, a));
+  }
+  return(0);
+}
+ 
+void push(struct stack *sp, int item)
+{
+  if(stack_full(sp))
+  {
+    printf("\nStack Overflow....Press Enter");
+    exit(1);
+  }
+  sp->top=sp->top+1;
+  sp->info[sp->top]=item;
+}
+ 
+int pop(struct stack *sp)
+{
+  int t;
+  if(stack_empty(sp))
+  {
+    printf("\n Underflow.....");
+    exit(1);
+  }
+  t = sp->info[sp->top];
+  sp->top = sp->top - 1;
+  return(t);
+}
+
+int stack_empty(struct stack *sp)
+{
+  if(sp->top == -1)
+    return(1);
+  return(0);
+}
+
+int stack_full(struct stack *sp)
+{
+  if(sp->top == STACKSIZE -1)
+    return(1);
+  return(0);
+}
